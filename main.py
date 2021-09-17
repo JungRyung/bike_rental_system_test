@@ -48,7 +48,7 @@ class Truck:
     def operate(self, over_located_locs, under_located_locs):
         commands = []
         
-        x, y = id_to_loc(self.__location_id)
+        x, y = id_to_loc(PROBLEM, self.__location_id)
         self.__location_loc = (x,y)
         
         # 트럭이 아무것도 안하고 있고 가지고 있는 자전거가 한대도 없을 때 -> 자전거를 상차하기 위한 장소를 검색 후 이동
@@ -57,7 +57,7 @@ class Truck:
                 self.__destination_loc = over_located_locs.pop()
                 tmp_commands = self.__search_route(self.__location_loc, self.__destination_loc)
                 tmp_commands.append(5)
-                while len(commands) < 10:
+                while len(commands) < 10 and len(tmp_commands) > 0:
                     commands.append(tmp_commands.pop(0))
                 if len(tmp_commands) > 0:
                     self.__remained_commands = tmp_commands
@@ -68,7 +68,7 @@ class Truck:
                 self.__destination_loc = under_located_locs.pop()
                 tmp_commands = self.__search_route(self.__location_loc, self.__destination_loc)
                 tmp_commands.append(6)
-                while len(commands) < 10:
+                while len(commands) < 10 and len(tmp_commands) > 0:
                     commands.append(tmp_commands.pop(0))
                 if len(tmp_commands) > 0:
                     self.__remained_commands = tmp_commands
@@ -77,13 +77,14 @@ class Truck:
         elif self.__status == "tasking":
             for command in self.remained_commands:
                 commands.append(command)
-            if len(commands) < 10:
-                n = 10 - len(commands)
-                for _ in range(n):
-                    commands.append(0)
             self.__remained_commands = []
             self.__status = "ready"
-            return commands
+
+        if len(commands) < 10:
+            n = 10 - len(commands)
+            for _ in range(n):
+                commands.append(0)
+        return commands
 
 def request_start_API(base_url, x_auth_token, problem_num):
     global request_cnt
@@ -247,9 +248,6 @@ if __name__ == "__main__":
         for truck_info in trucks_info:
             trucks[truck_info["id"]].update(PROBLEM, truck_info["location_id"], truck_info["loaded_bikes_count"])
 
-        # 트럭 operate
-        
-
         # 트럭 명령 리스트 생성
         trucks_commands = []
         n = 0
@@ -260,7 +258,7 @@ if __name__ == "__main__":
         for i in range(n):
             temp_dict = {}
             temp_dict["truck_id"] = i
-            temp_dict["command"] = trucks[i].operate()
+            temp_dict["command"] = trucks[i].operate(over_located_locs, under_located_locs)
             trucks_commands.append(temp_dict)
 
         # 시뮬레이션
