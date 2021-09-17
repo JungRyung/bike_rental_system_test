@@ -6,7 +6,7 @@ import platform
 
 X_AUTH_TOKEN = "a371e161110b6f4c61b57a5e3e8fc6df"
 BASE_URL = "https://kox947ka1a.execute-api.ap-northeast-2.amazonaws.com/prod/users"
-PROBLEM = 1
+PROBLEM = 2
 
 def request_start_API(base_url, x_auth_token, problem_num):
     global request_cnt
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         if PROBLEM == 1:
             n = 5
         else:
-            n = 60
+            n = 10
         for i in range(n):
             temp_dict = {}
             temp_dict["truck_id"] = i
