@@ -270,3 +270,4 @@ if __name__ == "__main__":
     score = request_score_API(BASE_URL, auth_key)
     clear_console()
     print(score)
+    
